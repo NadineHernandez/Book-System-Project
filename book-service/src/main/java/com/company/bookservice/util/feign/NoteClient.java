@@ -1,16 +1,35 @@
 package com.company.bookservice.util.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @FeignClient(name = "note-service")
+@RequestMapping("notes")
 public interface NoteClient {
-    @RequestMapping(value = "/notes/book/{book_id}", method = RequestMethod.GET)
-    public List<Object> getNotesById(@PathVariable("book_id") int id);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Object addNoteToDB(@RequestBody Object note);
 
-    //and all other note paths
+    @DeleteMapping(path = "/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteNoteFromDB(@PathVariable int note_id);
+
+    @GetMapping
+    @ResponseStatus(value = HttpStatus.OK)
+    public List<Object> getNoteListfromDB();
+
+    @GetMapping(path = "/{id}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public Object getNoteFromDB(@PathVariable int id);
+
+    @PutMapping
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void updateNoteInDB(@RequestBody Object note);
+
+    @GetMapping(path = "book/{book_id}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public List<Object> getNotesByBookfromDB(@PathVariable int bookId);
 }
