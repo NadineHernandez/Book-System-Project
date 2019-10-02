@@ -4,6 +4,7 @@ package com.company.noteservice.controller;
 import com.company.noteservice.dao.NoteDao;
 import com.company.noteservice.dto.Note;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@RefreshScope
 @RequestMapping("notes") // http://localhost:8080/note
 public class NoteServiceController {
     private NoteDao noteDao;
