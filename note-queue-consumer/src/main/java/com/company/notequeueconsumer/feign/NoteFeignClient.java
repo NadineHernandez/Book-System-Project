@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface NoteFeignClient {
 
     @PostMapping("/notes")
-    Note createNote(@RequestBody Note note);
+    void createNote(@RequestBody Note note);
 
     @PutMapping("/notes")
-    Note updateNote(@RequestBody Note note);
+    void updateNote(@RequestBody Note note);
 
 }
