@@ -3,6 +3,7 @@ package com.company.noteservice.controller;
 
 import com.company.noteservice.dao.NoteDao;
 import com.company.noteservice.dto.Note;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,11 @@ import java.util.List;
 @RequestMapping("notes") // http://localhost:8080/note
 public class NoteServiceController {
     private NoteDao noteDao;
+
+    @Autowired
+    public NoteServiceController(NoteDao noteDao) {
+        this.noteDao = noteDao;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
