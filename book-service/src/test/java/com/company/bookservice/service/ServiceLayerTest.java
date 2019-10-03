@@ -2,6 +2,7 @@ package com.company.bookservice.service;
 
 import com.company.bookservice.DAO.BookDao;
 import com.company.bookservice.DAO.BookImplemention;
+import com.company.bookservice.DTO.Book;
 import com.company.bookservice.ViewModel.ViewModel;
 import com.company.bookservice.util.feign.NoteClient;
 import com.company.bookservice.util.messages.Note;
@@ -44,30 +45,21 @@ public class ServiceLayerTest {
     private void setUpBookDaoMock(){
         bookDao = mock(BookImplemention.class);
 
-        ViewModel viewModel = new ViewModel();
-        viewModel.setBookId(1);
-        viewModel.setTitle("Sample Title");
-        viewModel.setAuthor("Sample Author");
-        viewModel.setNotes(client.getNotesByBookfromDB(viewModel.getBookId()));
+        Book book = new Book();
+        book.setBookId(1);
+        book.setTitle("Sample Title");
+        book.setAuthor("Sample Author");
 
-        List<Note> noteList = new ArrayList<>();
-        Note note2 = new Note();
-        note2.setBookId(1);
-        note2.setNote("Sample Note 1");
+        Book book2 = new Book();
+        book2.setTitle("Sample Title");
+        book2.setAuthor("Sample Author");
 
-        noteList.add(note2);
+        List<Book> bList = new ArrayList<>();
+        bList.add(book);
 
-        ViewModel viewModel2 = new ViewModel();
-        viewModel2.setTitle("Sample Title");
-        viewModel2.setAuthor("Sample Author");
-        viewModel2.setNotes(noteList);
-
-        List<ViewModel> bList = new ArrayList<>();
-        bList.add(viewModel);
-
-        doReturn(viewModel).when(serviceLayer).saveBook(viewModel2);
-        doReturn(viewModel).when(serviceLayer).findBook(1);
-        doReturn(bList).when(serviceLayer).findAllBooks();
+        doReturn(book).when(bookDao).addBook(book2);
+        doReturn(book).when(bookDao).getBook(1);
+        doReturn(bList).when(bookDao).getAllBooks();
     }
 
     @Before
