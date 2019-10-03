@@ -22,14 +22,12 @@ public class ServiceLayer {
 
     private RabbitTemplate rabbitTemplate;
 
+    @Autowired
     public ServiceLayer(NoteClient client, BookDao dao, RabbitTemplate rabbitTemplate) {
         this.client = client;
         this.dao = dao;
         this.rabbitTemplate = rabbitTemplate;
-    }
-
-    @Autowired
-
+    } 
 
     @Transactional
     public ViewModel saveBook(ViewModel viewModel){
