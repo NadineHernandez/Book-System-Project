@@ -34,6 +34,7 @@ public class ServiceLayer {
     public ViewModel saveBook(ViewModel viewModel){
         Book book = new Book(viewModel.getTitle(),viewModel.getAuthor());
         dao.addBook(book);
+        return viewModel;
 
     }
 
