@@ -1,5 +1,8 @@
 package com.company.bookservice.Controller;
 
+import com.company.bookservice.DTO.Book;
+import com.company.bookservice.ViewModel.ViewModel;
+import com.company.bookservice.service.ServiceLayer;
 import com.company.bookservice.util.feign.NoteClient;
 import com.company.bookservice.util.messages.Note;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -15,54 +18,86 @@ import java.util.List;
 @RequestMapping("/books")
 public class BookServiceController {
 
-    //Rabbit MQ Set up
-    public static final String EXCHANGE = "queue-note-exchange";
-    public static final String ROUTING_KEY = "book.add.note.controller";
+    private ServiceLayer serviceLayer;
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-
-    public BookServiceController(RabbitTemplate rabbitTemplate, NoteClient client) {
-        this.rabbitTemplate = rabbitTemplate;
-        this.client = client;
+    public BookServiceController(ServiceLayer serviceLayer) {
+        this.serviceLayer = serviceLayer;
     }
 
-    //EXAMPLE
-//    @RequestMapping(value = "/account", method = RequestMethod.POST)
-//    public String createAccount(@RequestBody Account account) {
-//        // create message to send to email list creation queue
-//        EmailListEntry msg = new EmailListEntry(account.getFirstName() + " " + account.getLastName(), account.getEmail());
-//        System.out.println("Sending message...");
-//        rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY, msg);
-//        System.out.println("Message Sent");
-//
-//        // Now do account creation stuff...
-//
-//        return "Account Created";
-//    }
-
-
-    //Feign Set up
-    @Autowired
-    private final NoteClient client;
-
-
-
+    //note paths
+    //c
+    @PostMapping(value = "/notes")
+    @ResponseStatus(HttpStatus.OK)
+    public void addNote(@RequestBody Note note){
+        serviceLayer.createNote(note);
+    }
+    //r
+    @RequestMapping(value = "/notes/{id}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.FOUND)
+    public Note getNote(@PathVariable int id){
+        return serviceLayer.getNote(id);
+    }
+    //r all
     @RequestMapping(value = "/notes", method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.FOUND)
     public List<Note> getAllNotes(){
-        return client.getNoteListfromDB();
+        return serviceLayer.getAllNotes();
     }
-
-    @RequestMapping(value = "/notes/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Object getNote(@PathVariable int id){
-        return client.getNoteFromDB(id);
-    }
-
+    //r by book
     @GetMapping(value = "/notes/book/{book_id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Note> getNotesByBook(@PathVariable("bookId") int bookId){
-        return client.getNotesByBookfromDB(bookId);
+    public List<Note> getNotesByBook(@PathVariable int book_id){
+        return serviceLayer.getNotesByBook(book_id);
+    }
+    //u
+    @PutMapping(value = "/notes/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateNote(@RequestBody Note note){
+        serviceLayer.updateNote(note);
+    }
+    //d
+    @DeleteMapping(value = "/notes/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteNote(@PathVariable int id){
+        serviceLayer.deleteNote(id);
+    }
+
+    //book paths
+
+    //    public Book addBook(Book book);
+    @PostMapping(value = "/books")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ViewModel addBook(@RequestBody ViewModel viewModel){
+        return serviceLayer.saveBook(viewModel);
+    }
+
+    //    public Book getBook(int bookId);
+    @GetMapping(value = "/books/{id}")
+    @ResponseStatus(HttpStatus.FOUND)
+    public ViewModel getBook(@PathVariable int id){
+        return serviceLayer.findBook(id);
+    }
+
+    //    public List<Book> getAllBooks();
+    @GetMapping(value = "/books")
+    @ResponseStatus(HttpStatus.FOUND)
+    public List<ViewModel> getAllBooks(){
+        List<ViewModel> books = serviceLayer.findAllBooks();
+        return books;
+    }
+
+    //    public void updateBook(Book book);
+    @PutMapping(value = "/books/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateBook(@RequestBody ViewModel viewModel){
+        serviceLayer.updateBook(viewModel);
+    }
+
+
+    //    public void deleteBook(int bookId);
+    @DeleteMapping(value = "/books/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteBook(@PathVariable int id){
+        serviceLayer.removeBook(id);
     }
 }
