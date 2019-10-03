@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @Component
 public class ServiceLayer {
 
+    //Feign Client
     private NoteClient client;
 
     private BookDao dao;
@@ -32,6 +33,7 @@ public class ServiceLayer {
         this.rabbitTemplate = rabbitTemplate;
     }
 
+    //    public Book addBook(Book book);
     @Transactional
     public ViewModel saveBook(ViewModel viewModel){
         Book book = new Book(viewModel.getTitle(),viewModel.getAuthor());
@@ -51,10 +53,12 @@ public class ServiceLayer {
         return viewModel;
     }
 
+    //    public Book getBook(int bookId);
     public ViewModel findBook(int id){
         return buildViewModel(dao.getBook(id));
     }
 
+    //    public List<Book> getAllBooks();
     public List<ViewModel> findAllBooks(){
 
         return dao.getAllBooks().stream()
@@ -63,6 +67,7 @@ public class ServiceLayer {
 
     }
 
+    //    public void updateBook(Book book);
     @Transactional
     public void updateBook(ViewModel viewModel){
         Book book = new Book(viewModel.getBookId(),viewModel.getTitle(),viewModel.getAuthor());
@@ -74,6 +79,7 @@ public class ServiceLayer {
             rabbitTemplate.convertAndSend(EXCHANGE,ROUTING_KEY,note);});
     }
 
+    //    public void deleteBook(int bookId);
     @Transactional
     public void removeBook(int id){
 
@@ -84,9 +90,31 @@ public class ServiceLayer {
 
     }
 
+    public Note getNote(int noteId){
+        return client.getNoteFromDB(noteId);
+    }
+
+    public List<Note> getAllNotes(){
+        List<Note> notes = client.getNoteListfromDB();
+        return notes;
+    }
+
     public List<Note> getNotesByBook(int bookId){
         List<Note> notes = client.getNotesByBookfromDB(bookId);
         return notes;
     }
+
+    public void createNote(Note note){
+        rabbitTemplate.convertAndSend(EXCHANGE,ROUTING_KEY,note);
+    }
+
+    public void updateNote(Note note){
+        rabbitTemplate.convertAndSend(EXCHANGE,ROUTING_KEY,note);
+    }
+
+    public void deleteNote(int id){
+        client.deleteNoteFromDB(id);
+    }
+
 
 }
