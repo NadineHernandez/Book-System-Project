@@ -21,19 +21,28 @@ public class ServiceLayer {
     private BookDao dao;
 
     private RabbitTemplate rabbitTemplate;
+    //Rabbit MQ Set up
+    public static final String EXCHANGE = "note-exchange";
+    public static final String ROUTING_KEY = "note.controller";
 
     @Autowired
     public ServiceLayer(NoteClient client, BookDao dao, RabbitTemplate rabbitTemplate) {
         this.client = client;
         this.dao = dao;
         this.rabbitTemplate = rabbitTemplate;
-    } 
+    }
 
     @Transactional
     public ViewModel saveBook(ViewModel viewModel){
         Book book = new Book(viewModel.getTitle(),viewModel.getAuthor());
-        dao.addBook(book);
-
+        book = dao.addBook(book);
+        int myBookId = book.getBookId();
+        viewModel.setBookId(myBookId);
+        List<Note> notes = viewModel.getNotes();
+        notes.stream().forEach(note -> {
+            note.setBookId(myBookId);
+            rabbitTemplate.convertAndSend(EXCHANGE,ROUTING_KEY,note);});
+        return viewModel;
     }
 
     private ViewModel buildViewModel(Book book){
@@ -52,7 +61,13 @@ public class ServiceLayer {
 
     @Transactional
     public void updateBook(ViewModel viewModel){
-
+        Book book = new Book(viewModel.getBookId(),viewModel.getTitle(),viewModel.getAuthor());
+        dao.updateBook(book);
+        int myBookId = book.getBookId();
+        List<Note> notes = viewModel.getNotes();
+        notes.stream().forEach(note -> {
+            note.setBookId(myBookId);
+            rabbitTemplate.convertAndSend(EXCHANGE,ROUTING_KEY,note);});
     }
 
     @Transactional
