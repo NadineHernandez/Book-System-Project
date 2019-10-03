@@ -8,8 +8,11 @@ import com.company.bookservice.util.feign.NoteClient;
 import com.company.bookservice.util.messages.Note;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +20,8 @@ import java.util.List;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Mockito.*;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class ServiceLayerTest {
 
     private ServiceLayer serviceLayer;
@@ -44,6 +49,7 @@ public class ServiceLayerTest {
 
     private void setUpBookDaoMock(){
         bookDao = mock(BookImplemention.class);
+        rabbitTemplate = mock(RabbitTemplate.class);
 
         Book book = new Book();
         book.setBookId(1);
@@ -65,6 +71,7 @@ public class ServiceLayerTest {
     @Before
     public void setUp() throws Exception {
         setUpBookDaoMock();
+        setUpNoteClientMock();
         serviceLayer = new ServiceLayer(client, bookDao, rabbitTemplate);
     }
 
@@ -82,9 +89,15 @@ public class ServiceLayerTest {
         viewModel2.setAuthor("Sample Author");
         viewModel2.setNotes(noteList);
 
-        viewModel2 = serviceLayer.saveBook(viewModel2);
+        ViewModel viewModel3 = new ViewModel();
+        viewModel3.setTitle("Sample Title");
+        viewModel3.setAuthor("Sample Author");
+        viewModel3.setNotes(noteList);
+        viewModel3.setBookId(1);
 
-        assertEquals(viewModel2, serviceLayer.findBook(viewModel2.getBookId()));
+        ViewModel fromService = serviceLayer.saveBook(viewModel2);
+
+        assertEquals(viewModel3, fromService);
 
     }
 
@@ -92,19 +105,19 @@ public class ServiceLayerTest {
     public void findBook() {
         List<Note> noteList = new ArrayList<>();
         Note note2 = new Note();
+        note2.setNoteId(1);
         note2.setBookId(1);
         note2.setNote("Sample Note 1");
 
         noteList.add(note2);
 
         ViewModel viewModel2 = new ViewModel();
+        viewModel2.setBookId(1);
         viewModel2.setTitle("Sample Title");
         viewModel2.setAuthor("Sample Author");
         viewModel2.setNotes(noteList);
 
-        viewModel2 = serviceLayer.saveBook(viewModel2);
-
-        assertEquals(viewModel2, serviceLayer.findBook(viewModel2.getBookId()));
+        assertEquals(viewModel2, serviceLayer.findBook(1));
 
     }
 
@@ -145,13 +158,10 @@ public class ServiceLayerTest {
         viewModel2.setAuthor("Sample Author");
         viewModel2.setNotes(noteList);
 
-        ArgumentCaptor<ViewModel> bookCaptor = ArgumentCaptor.forClass(ViewModel.class);
-        doNothing().when(serviceLayer).updateBook(bookCaptor.capture());
-
+        ArgumentCaptor<Book> bookCaptor = ArgumentCaptor.forClass(Book.class);
         serviceLayer.updateBook(viewModel2);
 
-        verify(serviceLayer, times(1)).updateBook(bookCaptor.getValue());
-        assertEquals(viewModel2, bookCaptor.getValue());
+        verify(bookDao, times(1)).updateBook(bookCaptor.capture());
 
     }
 
@@ -160,6 +170,7 @@ public class ServiceLayerTest {
 
         List<Note> noteList = new ArrayList<>();
         Note note2 = new Note();
+        note2.setNoteId(1);
         note2.setBookId(1);
         note2.setNote("Sample Note 1");
 
@@ -172,11 +183,9 @@ public class ServiceLayerTest {
         viewModel2.setNotes(noteList);
 
         ArgumentCaptor<Integer> idCaptor = ArgumentCaptor.forClass(Integer.class);
-        doNothing().when(serviceLayer).removeBook(idCaptor.capture());
-
         serviceLayer.removeBook(1);
 
-        verify(serviceLayer, times(1)).removeBook(idCaptor.getValue());
+        verify(bookDao, times(1)).deleteBook(idCaptor.capture());
         assertEquals(1, idCaptor.getValue().intValue());
 
 
