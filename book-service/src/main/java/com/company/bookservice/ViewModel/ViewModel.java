@@ -57,14 +57,14 @@ public class ViewModel {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ViewModel viewModel = (ViewModel) o;
-        return bookId == viewModel.bookId &&
-                title.equals(viewModel.title) &&
-                author.equals(viewModel.author) &&
-                Objects.equals(notes, viewModel.notes);
+        return getBookId() == viewModel.getBookId() &&
+                getTitle().equals(viewModel.getTitle()) &&
+                getAuthor().equals(viewModel.getAuthor()) &&
+                Objects.equals(getNotes(), viewModel.getNotes());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(bookId, title, author, notes);
+        return Objects.hash(getBookId(), getTitle(), getAuthor(), getNotes());
     }
 }
