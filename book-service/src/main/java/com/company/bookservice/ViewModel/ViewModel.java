@@ -1,5 +1,7 @@
 package com.company.bookservice.ViewModel;
 
+import com.company.bookservice.util.messages.Note;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -7,7 +9,16 @@ public class ViewModel {
     private int bookId;
     private String title;
     private String author;
-    private List<Object> notes;
+    private List<Note> notes;
+
+    public ViewModel(int bookId, String title, String author, List<Note> notes) {
+        this.bookId = bookId;
+        this.title = title;
+        this.author = author;
+        this.notes = notes;
+    }
+
+    public ViewModel(){}
 
     public int getBookId() {
         return bookId;
@@ -33,11 +44,11 @@ public class ViewModel {
         this.author = author;
     }
 
-    public List<Object> getNotes() {
+    public List<Note> getNotes() {
         return notes;
     }
 
-    public void setNotes(List<Object> notes) {
+    public void setNotes(List<Note> notes) {
         this.notes = notes;
     }
 
