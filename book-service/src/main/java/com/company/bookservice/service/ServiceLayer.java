@@ -5,6 +5,7 @@ import com.company.bookservice.DTO.Book;
 import com.company.bookservice.ViewModel.ViewModel;
 import com.company.bookservice.util.feign.NoteClient;
 import com.company.bookservice.util.messages.Note;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,19 +17,24 @@ import java.util.stream.Collectors;
 public class ServiceLayer {
 
 
-    NoteClient client;
+    private NoteClient client;
 
     private BookDao dao;
 
+    private RabbitTemplate rabbitTemplate;
+
     @Autowired
-    public ServiceLayer(BookDao dao, NoteClient client){
-        this.dao = dao;
+    public ServiceLayer(NoteClient client, BookDao dao, RabbitTemplate rabbitTemplate) {
         this.client = client;
-    }
+        this.dao = dao;
+        this.rabbitTemplate = rabbitTemplate;
+    } 
 
     @Transactional
     public ViewModel saveBook(ViewModel viewModel){
-        return null;
+        Book book = new Book(viewModel.getTitle(),viewModel.getAuthor());
+        dao.addBook(book);
+
     }
 
     private ViewModel buildViewModel(Book book){
