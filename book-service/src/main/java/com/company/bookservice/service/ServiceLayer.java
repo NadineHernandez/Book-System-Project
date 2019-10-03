@@ -1,4 +1,4 @@
-package com.company.bookservice.ServiceLayer;
+package com.company.bookservice.service;
 
 import com.company.bookservice.DAO.BookDao;
 import com.company.bookservice.DTO.Book;
