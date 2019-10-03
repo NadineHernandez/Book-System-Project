@@ -59,7 +59,7 @@ public class NoteServiceController {
 
     }
 
-    @GetMapping(path = "book/{book_id}")
+    @GetMapping(path = "book/{bookId}")
     @ResponseStatus(value = HttpStatus.OK)
     public List<Note> getNotesByManufacturerfromDB(@PathVariable int bookId) throws Exception {
         List<Note> gList = noteDao.getNotesByBook(bookId);

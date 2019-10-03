@@ -55,22 +55,25 @@ public class NoteDaoTest {
 
     @Test
     public void getAllNotes() {
-        Note note = new Note();  // Create note object.
+        Note note = new Note();
         note.setBookId(1001);
         note.setNote("Hello Kimmel!");
 
+        Note note2 = new Note();
+        note2.setBookId(1002);
+        note2.setNote("Hi Johnny!");
+
+        // Creates note object
         note = dao.addNote(note);
 
-        // Java object is now changed from hereon. DB data not yet changed.
-        note.setBookId(1002);
-        note.setNote("Hi Johnny!");
+        // Creates note2 object
+        note2 = dao.addNote(note2);
 
-        // Change Database data using update.
-        dao.updateNote(note);
+        List<Note> mList = dao.getAllNotes();
 
-        Note note2 = dao.getNote(note.getNoteId());  // Create note record or rows in the database.
+        int mListSize = mList.size();
 
-        assertEquals(note, note2);
+        assertEquals(2, mListSize);
 
     }
 
@@ -91,33 +94,33 @@ public class NoteDaoTest {
         // Change Database data using update.
         dao.updateNote(note);
 
-        Note note2 = dao.getNote(note.getNoteId());  // Create moto record or rows in the database.
+        Note note2 = dao.getNote(note.getNoteId());  // Create note record or rows in the database.
 
         assertEquals(note, note2);
     }
 
     @Test
     public void getNotesbyBook(){
-        Note note = new Note();  // Create moto object.
+        Note note = new Note();  // Create note object.
         note.setBookId(1001);
         note.setNote("Hello Kimmel!");
 
-        Note note2 = new Note();  // Create moto2 object.
+        Note note2 = new Note();  // Create note2 object.
         note2.setBookId(1002);
         note2.setNote("Hi Johnny!");
 
-        Note note3 = new Note();  // Create moto2 object.
+        Note note3 = new Note();  // Create note2 object.
         note3.setBookId(1001);
         note3.setNote("Hi again Kimmel!");
 
-        // Creates moto object
-        note = dao.addNote(note);  // Create moto record or rows in the database.
+        // Creates note object
+        note = dao.addNote(note);  // Create note record or rows in the database.
 
-        // Creates moto2 object
-        note2 = dao.addNote(note2);  // Create moto2 record in the database.
+        // Creates note2 object
+        note2 = dao.addNote(note2);  // Create note2 record in the database.
 
-        // Creates moto3 object
-        note3 = dao.addNote(note3);  // Create moto2 record in the database.
+        // Creates note3 object
+        note3 = dao.addNote(note3);  // Create note2 record in the database.
 
 
         List<Note> bList = dao.getNotesByBook(1001);
