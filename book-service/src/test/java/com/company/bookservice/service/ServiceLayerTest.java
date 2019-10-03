@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +22,8 @@ public class ServiceLayerTest {
     private BookDao bookDao;
     private NoteClient client;
     private RabbitTemplate rabbitTemplate;
+    public static final String EXCHANGE = "note-exchange";
+    public static final String ROUTING_KEY = "note.controller";
 
     private void setUpNoteClientMock(){
         client = mock(NoteClient.class);
@@ -41,6 +42,23 @@ public class ServiceLayerTest {
 
         doReturn(nList).when(client).getNotesByBookfromDB(1);
     }
+
+/*    private void setUpRabbitTemplateMock(){
+        rabbitTemplate = mock(RabbitTemplate.class);
+
+        Note note = new Note();
+        note.setNoteId(1);
+        note.setBookId(1);
+        note.setNote("Sample Note 1");
+
+        Note note2 = new Note();
+        note2.setBookId(1);
+        note2.setNote("Sample Note 1");
+
+
+//        doReturn(note).when(rabbitTemplate).convertAndSend(EXCHANGE,ROUTING_KEY, note2);
+        doNothing().when(rabbitTemplate).convertAndSend(EXCHANGE,ROUTING_KEY, note2);
+    }*/
 
     private void setUpBookDaoMock(){
         bookDao = mock(BookImplemention.class);
@@ -72,7 +90,6 @@ public class ServiceLayerTest {
     public void saveBook() {
         List<Note> noteList = new ArrayList<>();
         Note note2 = new Note();
-        note2.setBookId(1);
         note2.setNote("Sample Note 1");
 
         noteList.add(note2);
@@ -85,14 +102,12 @@ public class ServiceLayerTest {
         viewModel2 = serviceLayer.saveBook(viewModel2);
 
         assertEquals(viewModel2, serviceLayer.findBook(viewModel2.getBookId()));
-
     }
 
     @Test
     public void findBook() {
         List<Note> noteList = new ArrayList<>();
         Note note2 = new Note();
-        note2.setBookId(1);
         note2.setNote("Sample Note 1");
 
         noteList.add(note2);
