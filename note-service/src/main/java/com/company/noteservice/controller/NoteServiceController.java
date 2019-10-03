@@ -28,10 +28,10 @@ public class NoteServiceController {
         return noteDao.addNote(note);
     }
 
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping(path = "/{noteId}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteNoteFromDB(@PathVariable int note_id) {
-        noteDao.deleteNote(note_id);
+    public void deleteNoteFromDB(@PathVariable int noteId) {
+        noteDao.deleteNote(noteId);
     }
 
     @GetMapping
