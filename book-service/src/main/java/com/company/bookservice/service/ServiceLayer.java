@@ -6,7 +6,6 @@ import com.company.bookservice.ViewModel.ViewModel;
 import com.company.bookservice.util.feign.NoteClient;
 import com.company.bookservice.util.messages.Note;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,14 +14,15 @@ import java.util.List;
 @Component
 public class ServiceLayer {
 
-    @Autowired
+
     NoteClient client;
 
     private BookDao dao;
 
     @Autowired
-    public ServiceLayer(BookDao dao){
+    public ServiceLayer(BookDao dao, NoteClient client){
         this.dao = dao;
+        this.client = client;
     }
 
     @Transactional
@@ -37,11 +37,11 @@ public class ServiceLayer {
     }
 
     public ViewModel findBook(int id){
-        return null;
+        return buildViewModel(dao.getBook(id));
     }
 
     public List<ViewModel> findAllBooks(){
-        return null;
+
     }
 
     @Transactional
