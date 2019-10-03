@@ -1,6 +1,7 @@
 package com.company.bookservice.Controller;
 
 import com.company.bookservice.util.feign.NoteClient;
+import com.company.bookservice.util.messages.Note;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -15,9 +16,8 @@ import java.util.List;
 public class BookServiceController {
 
     //Rabbit MQ Set up
-
-    public static final String EXCHANGE = "queue-demo-exchange";
-    public static final String ROUTING_KEY = "email.list.add.account.controller";
+    public static final String EXCHANGE = "queue-note-exchange";
+    public static final String ROUTING_KEY = "book.add.note.controller";
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -50,7 +50,7 @@ public class BookServiceController {
 
     @RequestMapping(value = "/notes", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public List<Object> getAllNotes(){
+    public List<Note> getAllNotes(){
         return client.getNoteListfromDB();
     }
 
@@ -62,7 +62,7 @@ public class BookServiceController {
 
     @GetMapping(value = "/notes/book/{book_id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Object> getNotesByBook(@PathVariable("bookId") int bookId){
+    public List<Note> getNotesByBook(@PathVariable("bookId") int bookId){
         return client.getNotesByBookfromDB(bookId);
     }
 }
