@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class ServiceLayer {
-
 
     private NoteClient client;
 
@@ -57,6 +57,10 @@ public class ServiceLayer {
 
     public List<ViewModel> findAllBooks(){
 
+        return dao.getAllBooks().stream()
+                .map(this::buildViewModel)
+                .collect(Collectors.toList());
+
     }
 
     @Transactional
@@ -72,6 +76,11 @@ public class ServiceLayer {
 
     @Transactional
     public void removeBook(int id){
+
+        getNotesByBook(id)
+                .stream()
+                .forEach(note -> client.deleteNoteFromDB(note.getNoteId()));
+        dao.deleteBook(id);
 
     }
 
